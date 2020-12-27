@@ -1,20 +1,4 @@
-import { Agent } from './agent';
-import { Server, Socket } from 'socket.io';
-import { Queue } from './queue';
 import * as fs from 'fs';
-import { rejects } from 'assert';
-
-type Task = {
-    plugin: string;
-    variable: string[];
-}
-type PipelineConfig = {
-    tasks: {[k:string]: Task}
-}
-type Pipeline = {
-    name: string;
-    config: PipelineConfig;
-}
 
 const pathStorage = '.nodeci/storage';
 

@@ -14,7 +14,7 @@
     "importHelpers": true,
     "target": "es5",
     "jsx": "react",
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": ["node_modules/@types", "types"],
     "lib": [
       "es2018"
     ]

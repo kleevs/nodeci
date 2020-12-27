@@ -2,41 +2,31 @@ import { Agent } from './agent';
 import { Server, Socket } from 'socket.io';
 import { Queue } from './queue';
 import { read as readStoragePipeline, write as writeStoragePipeline } from './storage';
+import { getConfig } from './config';
+import { getReadOnlyPipeline } from './pipeline';
 
-type Task = {
-    plugin: string;
-    variable: string[];
-}
-type Listeners = {[k:string]: {
-    isAgent: boolean,
-    isAdmin: boolean,
-    agent: Agent
-}}
-type PipelineConfig = {
-    tasks: {[k:string]: Task}
-}
-type Pipeline = {
-    name: string;
-    config: PipelineConfig;
-}
-type Build = {
-    pipeline: string;
-    agent: string;
-}
-
-export function start(port: number): void {
+export function start(port: number, c: Config): void {
     const listeners: Listeners  = {};
     const globalQueue: Queue<PipelineConfig> = new Queue();
     const agentNames: {[k:string]:string} = {};
     const pipelines: {[k:string]: PipelineConfig} = {};
     const io: Server = require('socket.io')(port);
+    const config = getConfig(c);
 
-    readStoragePipeline().then(_ => {
-        for (var i in _) {
-            if (!pipelines[i]) {
-                pipelines[i] = _[i];
+    getReadOnlyPipeline(config).then((pipelines) => {
+        pipelines.forEach(_ => {
+            if (!pipelines[_.name]) {
+                pipelines[_.name] = _.config;
             }
-        }
+        });
+    }).then(() => {
+        readStoragePipeline().then(_ => {
+            for (var i in _) {
+                if (!pipelines[i]) {
+                    pipelines[i] = _[i];
+                }
+            }
+        });
     });
 
     console.log(`listening on port ${port}`);

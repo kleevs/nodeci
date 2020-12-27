@@ -6,7 +6,7 @@
     "name": "kleevs"
   },
   "bin": {
-    "nodeci": "./lib/nodeci.js"
+    "nodeci": "./bin/nodeci"
   },
   "scripts": {
     "build": "tsc",

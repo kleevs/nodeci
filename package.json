@@ -5,6 +5,9 @@
   "author": {
     "name": "kleevs"
   },
+  "bin": {
+    "nodeci": "./lib/nodeci.js"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node lib/nodeci.js 8080 3000"

@@ -4,11 +4,16 @@ type Context = {
     workfolder: string;
 };
 
-export default async function (context: Context, repo: string, commit: string) {
-    await run(context, 
+export default async function (context: Context, {repository, commit, destination}: { 
+    repository: string;
+    commit: string; 
+    destination: string;
+}) {
+    const dest = destination || 'git_src';
+    await run(context, [
         `cd ${context.workfolder}`,
-        `git clone ${repo} git_src;`,
-        `cd ./git_src;`,
-        `git checkout ${commit}`
-    );
+        `git clone ${repository} ${dest};`,
+        `cd ./${dest};`,
+        commit && `git checkout ${commit}` || ''
+    ]);
 }

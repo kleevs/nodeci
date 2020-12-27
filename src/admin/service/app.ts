@@ -39,12 +39,10 @@ export function start(port: number, socketserver: string): void {
     app.use(bodyParser.json());
 
     app.get(routage.buildList, (req, res) => {
-        console.log(`List des builds`);
         res.end();
     });
 
     app.put(routage.build, (req, res) => {
-        console.log(`Création d'un build.`);
         socket.emit('create-build', {
             name: req.params.name,
             config: req.body
@@ -53,12 +51,10 @@ export function start(port: number, socketserver: string): void {
     });
 
     app.get(routage.build, (req, res) => {
-        console.log(`Obtient la config d'un build.`);
         res.end();
     });
 
     app.post(routage.build, (req, res) => {
-        console.log(`Lancement d'un build. ${req.params.name}`);
         socket.emit('launch-build', {
             pipeline: req.params.name,
             agent: req.body?.agent || null
@@ -67,12 +63,10 @@ export function start(port: number, socketserver: string): void {
     });
 
     app.get(routage.build, (req, res) => {
-        console.log(`Liste de toutes les instances d'un build.`);
         res.end();
     });
 
     app.get(routage.buildInstance, (req, res) => {
-        console.log(`Log de l'instance de build`);
         res.end();
     });
 

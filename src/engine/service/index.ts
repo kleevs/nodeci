@@ -48,7 +48,7 @@ export function start(port: number): void {
         };
 
         socket.on('disconnect', () => {
-            console.log(`a user disconnected ${socket.id}`);
+            console.log(`disconnected ${socket.id}`);
             delete listeners[socket.id];
         });
 
@@ -80,7 +80,6 @@ export function start(port: number): void {
             socket.on('create-build', (pipeline: Pipeline) => {
                 pipelines[pipeline.name] = pipeline.config;
                 writeStoragePipeline(pipelines);
-                console.log("build", pipeline);
             });
 
             // launch a pipeline

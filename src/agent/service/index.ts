@@ -42,16 +42,22 @@ export function start(host: string, name: string, currentPath: string) {
         for (var name in build.config.tasks) {
             const task = build.config.tasks[name];
             try {
-                const variable = ([context] as [any, ...string[]]).concat(task.variable);
-                await require(`../../plugin/${task.plugin}`).default.apply(this, variable);
+                const variable = task.variable;
+                
+                const plugin = (() => {
+                    try {
+                        return require(`plugin/${task.plugin}`)
+                    } catch (e) {
+                        return require(`../../plugin/${task.plugin}`);
+                    }
+                })();
+                await plugin.default(context, variable);
             } catch (e) {
                 console.error('error task', e);
                 break;
             }
         }
-        setTimeout(() => {
-            socket.emit('finish');
-        }, 5000);
+        socket.emit('finish');
     });
 
     socket.on('disconnect', () => {

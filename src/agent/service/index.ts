@@ -46,7 +46,7 @@ export function start(host: string, name: string, currentPath: string) {
                 
                 const plugin = (() => {
                     try {
-                        return require(`plugin/${task.plugin}`)
+                        return require(path.resolve(rootDir, `plugin/${task.plugin}`));
                     } catch (e) {
                         return require(`../../plugin/${task.plugin}`);
                     }

@@ -1,6 +1,6 @@
 {
   "compileOnSave": false,
-  "exclude": ["node_modules", ".nodeci"],
+  "exclude": ["node_modules", ".nodeci", "lib", "bin", "example"],
   "compilerOptions": {
     "baseUrl": "./src",
     "outDir": "./lib",

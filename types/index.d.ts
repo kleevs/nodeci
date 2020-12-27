@@ -28,9 +28,9 @@ declare type Agent = {
 declare type Config = {
     socket: {
         port: number;
-        pipeline: { [name:string]: string; }
     },
     api: {
         port: number;
-    }
+    },
+    pipeline: { [name:string]: string; }
 }

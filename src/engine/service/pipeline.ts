@@ -1,18 +1,22 @@
 import * as fs from 'fs';
+import * as path from 'path';
 
-export function getReadOnlyPipeline(config: Config): Promise<Pipeline[]> {
-    return new Promise((resolve) => {
-        const result: Pipeline[] = [];
-        for (var name in config.socket.pipeline) {
-            config.socket.pipeline[name];
-            fs.readFile(`${config.socket.pipeline[name]}`, 'utf8', (err,data) => {
+export function getReadOnlyPipeline(rootDir: string, config: Config): Promise<Pipeline[]> {
+    const result: Promise<Pipeline>[] = [];
+    for (let name in config.pipeline) {
+        result.push(new Promise((resolve) => {
+            const pathfilename = path.resolve(rootDir, config.pipeline[name]);
+            fs.readFile(pathfilename, 'utf8', (err,data) => {
                 if (err) {
                     console.log(err);
+                    resolve(null);
                 } else {
-                    result.push(JSON.parse(data));
+                    console.log(`pipeline ${pathfilename} loaded`);
+                    resolve({ name: name, config: JSON.parse(data) });
                 }
             });
-        }
-        resolve(result);
-    });
+        }));
+    }
+
+    return Promise.all(result).then(pipelines => pipelines.filter(_ => !!_))
 }

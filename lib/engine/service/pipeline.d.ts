@@ -1,1 +1,1 @@
-export declare function getReadOnlyPipeline(config: Config): Promise<Pipeline[]>;
+export declare function getReadOnlyPipeline(rootDir: string, config: Config): Promise<Pipeline[]>;

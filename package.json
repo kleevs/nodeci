@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node lib/nodeci.js 8080 3000"
+    "start": "node lib/nodeci.js"
   },
   "dependencies": {
     "express": "^4.17.1",

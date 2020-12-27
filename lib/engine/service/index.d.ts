@@ -1,1 +1,1 @@
-export declare function start(port: number, c: Config): void;
+export declare function start(port: number, rootDir: string, config: Config): void;

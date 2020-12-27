@@ -1,0 +1,22 @@
+{
+  "compileOnSave": false,
+  "exclude": ["node_modules", ".nodeci"],
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "./lib",
+    "sourceMap": false,
+    "declaration": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "importHelpers": true,
+    "target": "es5",
+    "jsx": "react",
+    "typeRoots": ["node_modules/@types"],
+    "lib": [
+      "es2018"
+    ]
+  }
+}

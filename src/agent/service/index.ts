@@ -24,39 +24,46 @@ export function start(host: string, name: string, currentPath: string) {
     });
 
     socket.on('run', async (build: Build) => {
-        const directory = (() => { 
-            let tmp: string = null;
-            while (!tmp || fs.existsSync(tmp)) {
-                const date = new Date();
-                const strDate = `${date.getFullYear()}${date.getMonth()+1}${date.getDate()}${date.getHours()}${date.getMinutes()}`;
-                tmp = `./.nodeci/work/${strDate}${Math.round(Math.random()*1000)}`;
+        console.log(`start pipeline ${name}`)
+        try {
+            const directory = (() => { 
+                let tmp: string = null;
+                while (!tmp || fs.existsSync(tmp)) {
+                    const date = new Date();
+                    const strDate = `${date.getFullYear()}${date.getMonth()+1}${date.getDate()}${date.getHours()}${date.getMinutes()}`;
+                    tmp = `./.nodeci/work/${strDate}${Math.round(Math.random()*1000)}`;
+                }
+                return tmp;
+            })();
+            const workpath = path.resolve(rootDir, directory);
+            fs.mkdirSync(directory, { recursive: true });
+            const context = {
+                workfolder: workpath
             }
-            return tmp;
-        })();
-        const workpath = path.resolve(rootDir, directory);
-        fs.mkdirSync(directory, { recursive: true });
-        const context = {
-            workfolder: workpath
-        }
-        
-        for (var name in build.config.tasks) {
-            const task = build.config.tasks[name];
-            try {
-                const variable = task.variable;
-                
-                const plugin = (() => {
-                    try {
-                        return require(path.resolve(rootDir, `plugin/${task.plugin}`));
-                    } catch (e) {
-                        return require(`../../plugin/${task.plugin}`);
-                    }
-                })();
-                await plugin.default(context, variable);
-            } catch (e) {
-                console.error('error task', e);
-                break;
+            
+            for (let taskname in build.config.tasks) {
+                const task = build.config.tasks[taskname];
+                try {
+                    const variable = task.variable;
+                    
+                    const plugin = (() => {
+                        try {
+                            return require(path.resolve(rootDir, `plugin/${task.plugin}`));
+                        } catch (e) {
+                            return require(`../../plugin/${task.plugin}`);
+                        }
+                    })();
+                    await plugin.default(context, variable);
+                } catch (e) {
+                    console.error('error task', e);
+                    break;
+                }
             }
+        } catch (e) {
+            console.log(e);
         }
+
+        console.log(`pipeline ${name} finished`)
         socket.emit('finish');
     });
 

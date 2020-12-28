@@ -1,8 +1,3 @@
-type Build = {
-    pipeline: string;
-    agent: string;
-}
-
 export class Queue<T> {
     private readonly _queue: T[] = [];
 

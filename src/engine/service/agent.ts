@@ -40,7 +40,6 @@ export class Agent {
     }
 
     private build(config: PipelineConfig) {
-        console.log('run', config);
         this._socket.emit('run', {
             config: config
         });

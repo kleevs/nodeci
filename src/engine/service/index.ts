@@ -13,7 +13,6 @@ export function start(port: number, rootDir: string, config: Config): void {
 
     getReadOnlyPipeline(rootDir, config).then((array) => {
         array.forEach(_ => {
-            console.log(_)
             if (!pipelines[_.name]) {
                 pipelines[_.name] = _.config;
             }

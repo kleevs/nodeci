@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { Queue } from './queue';
 import { read as readStoragePipeline, write as writeStoragePipeline } from './storage';
 import { getReadOnlyPipeline } from './pipeline';
+import { mkdirSync } from '../../shared/iofile';
 
 export function start(port: number, rootDir: string, config: Config): void {
     const listeners: Listeners  = {};
@@ -11,6 +12,7 @@ export function start(port: number, rootDir: string, config: Config): void {
     const pipelines: {[k:string]: PipelineConfig} = {};
     const io: Server = require('socket.io')(port);
 
+    mkdirSync('./.nodeci/logs');
     getReadOnlyPipeline(rootDir, config).then((array) => {
         array.forEach(_ => {
             if (!pipelines[_.name]) {
@@ -47,7 +49,7 @@ export function start(port: number, rootDir: string, config: Config): void {
             console.log(`an agent connected ${socket.id} ${name}`);
             const agent = listeners[socket.id];
             agent.isAgent = true;
-            agent.agent = new Agent(socket, (me) => {
+            agent.agent = new Agent(rootDir, socket, (me) => {
                 globalQueue.shift((config) => {
                     if (!me.isBusy()) {
                         me.run(config);

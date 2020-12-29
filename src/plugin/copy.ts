@@ -1,16 +1,13 @@
 import run from './script';
 import * as path from 'path';
 
-type Context = {
-    workfolder: string;
-};
-
-export default async function (context: Context, {source, destination}: { 
+export default async function (context: BuildContext, {source, destination}: { 
     source: string; 
     destination: string;
 }) {
     const dest = destination || '.';
+    console.log(`copy ${source} to ${dest}`)
     await run(context, [
-        `cp ${source} ${path.resolve(context.workfolder, dest)}`
+        `cp ${JSON.stringify(path.resolve(context.rootFolder, source))} ${JSON.stringify(path.resolve(context.workfolder, dest))}`
     ]);
 }

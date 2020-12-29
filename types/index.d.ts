@@ -1,6 +1,6 @@
 declare type Task = {
     plugin: string;
-    variable: string[];
+    variable: unknown;
 }
 declare type Listeners = {[k:string]: {
     isAgent: boolean,
@@ -12,6 +12,9 @@ declare type PipelineConfig = {
 }
 declare type Pipeline = {
     name: string;
+    config: PipelineConfig;
+}
+type AgentBuild = {
     config: PipelineConfig;
 }
 declare type Build = {
@@ -34,3 +37,8 @@ declare type Config = {
     },
     pipeline: { [name:string]: string; }
 }
+
+type BuildContext = {
+    workfolder: string;
+    rootFolder: string;
+} 

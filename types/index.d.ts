@@ -75,3 +75,9 @@ type Storage = {
     pipeline: PipelineMetadata;
     logs:  {[pipelinename:string]: LogMetadata};
 }
+
+type User = {
+    password: string;
+}
+
+type Users = {[login:string]: User}

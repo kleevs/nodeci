@@ -1,28 +1,15 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { readSync } from '../../shared/iofile';
-
-type Task = {
-    plugin: string;
-    variable: string[];
-}
-type PipelineConfig = {
-    tasks: {[k:string]: Task}
-}
-type Pipeline = {
-    name: string;
-    config: PipelineConfig;
-}
-type Build = {
-    pipeline: string;
-    agent: string;
-}
+import { basicAuth, computeHash, toBasicAuth } from './authorization';
+import { getUsers, updateUsers } from './storage';
 
 export function start(port: number, socketserver: string): void {
     const routage = {
         pipelineList: `/pipeline`,
         build: `/pipeline/:name`,
-        buildInstance: `/pipeline/:name/:id`
+        buildInstance: `/pipeline/:name/:id`,
+        user: `/user`
     };
 
     const app = express();
@@ -46,11 +33,12 @@ export function start(port: number, socketserver: string): void {
         data.storage = storage
     })
 
+    app.use(basicAuth(getUsers));
     app.use(bodyParser.json());
 
     app.get(routage.pipelineList, (req, res) => {
         const result = [];
-        for (var pipeline in data.storage.pipeline) {
+        for (var pipeline in data.storage?.pipeline) {
             result.push(pipeline);
         }
         res.end(JSON.stringify(result));
@@ -66,8 +54,8 @@ export function start(port: number, socketserver: string): void {
 
     app.get(routage.build, (req, res) => {
         const result = [];
-        for (var id in data.storage.logs[req.params.name]) {
-            const log = data.storage.logs[req.params.name][id];
+        for (var id in data.storage?.logs[req.params.name]) {
+            const log = data.storage?.logs[req.params.name][id];
             result.push({
                 id: id,
                 date: log.date,
@@ -87,10 +75,21 @@ export function start(port: number, socketserver: string): void {
     });
 
     app.get(routage.buildInstance, (req, res) => {
-        const log = data.storage.logs[req.params.name][req.params.id];
+        const log = data.storage?.logs[req.params.name][req.params.id];
         const result = readSync(`${log.file}`);
         res.end(result);
     });
+
+    app.post(routage.user, (req, res) => {
+        const password = computeHash(toBasicAuth(req.body.login, req.body.password));
+        updateUsers(users => ({
+            ...users,
+            [req.body.login]: {
+                password
+            }
+        }));
+        res.end();
+    })
 
     app.listen(port, () => {
         console.log(`listening at http://localhost:${port}`);

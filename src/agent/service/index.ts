@@ -7,9 +7,9 @@ export function start(host: string, name: string, currentPath: string) {
     const socket: Socket = io(host);
     const rootDir = currentPath.replace(/\\/gi, '/');
     const lognumber = { length: 0 };
-    const logger = (id: string, msg: string) => {
+    const logger = (id: string, pipeline: string, msg: string) => {
         lognumber.length++;
-        socket.emit('log', { id: id, index: lognumber.length, message: msg?.replace(/\r?\n$/gi, '').replace(/^\r?\n/gi, '') || '' });
+        socket.emit('log', { id: id, pipeline, index: lognumber.length, message: msg?.replace(/\r?\n$/gi, '').replace(/^\r?\n/gi, '') || '' } as LogHint);
     }
     socket.on('connect', () => {
         console.log(`is connected as ${socket.id}`);
@@ -18,7 +18,7 @@ export function start(host: string, name: string, currentPath: string) {
 
     socket.on('run', async (build: AgentBuild) => {
         const { workingFolderAbsolutePath, id } = createWorkingFolder(rootDir);
-        const log = (msg: string) => msg?.toString() && logger(id, msg.toString());
+        const log = (msg: string) => msg?.toString() && logger(id, build.name, msg.toString());
         log(`pipeline ${name}`);
         try {
             log(`preparing...`);

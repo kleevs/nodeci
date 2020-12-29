@@ -8,6 +8,20 @@ export function readSync(filename: string): string {
     return fs.readFileSync(`${filename}`, 'utf8').toString();
 }
 
+export function write(filename: string, content: string) {
+    return new Promise<void>((resolve, reject) => fs.writeFile(`${filename}`, content, 'utf8', (err) => {
+        if (err) reject(err);
+        resolve();
+    }));
+} 
+
+export function read(filename: string) {
+    return new Promise<string>((resolve, reject) => fs.readFile(`${filename}`, 'utf8', (err, data) => {
+        if (err) reject(err);
+        resolve(data);
+    }));
+}
+
 export function mkdirSync(dirname: string) {
     if (!fs.existsSync(dirname)){
         fs.mkdirSync(dirname, { recursive: true });

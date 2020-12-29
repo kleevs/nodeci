@@ -1,17 +1,11 @@
-import { appendFile } from '../../shared/iofile';
 import { Socket } from 'socket.io';
 import { Queue } from './queue';
-import * as path from 'path';
-
-type PipelineConfig = {
-    tasks: {[k:string]: unknown}
-}
 
 export class Agent {
     private _isBusy = false;
-    private readonly _queue = new Queue<PipelineConfig>();
+    private readonly _queue = new Queue<Pipeline>();
 
-    constructor(private readonly _rootDir: string, private readonly _socket: Socket, private readonly _doWork: (v: Agent) => void) {
+    constructor(private readonly _socket: Socket, private readonly _doWork: (v: Agent) => void, log: (v: { id: string, index: number, message: string, pipeline: string }) => void) {
         this._socket.on('finish', () => { 
             if(!this._queue.shift((config) => {
                 this.build(config);
@@ -21,17 +15,14 @@ export class Agent {
                 _doWork(this);
             }
         });
-        this._socket.on('log', ({id, index, message}: { id: string, index: number, message: string }) => {
-            appendFile(path.resolve(this._rootDir, `./.nodeci/logs/${id}.log.txt`), `${message}\r\n`);
-            console.log(message);
-        });
 
+        this._socket.on('log', log);
         _doWork(this);
     }
 
     isBusy() { return this._isBusy; }
 
-    run(config: PipelineConfig) {
+    run(config: Pipeline) {
         if (!this._isBusy) {
             this._isBusy = true;
             this.build(config);
@@ -46,9 +37,10 @@ export class Agent {
         }
     }
 
-    private build(config: PipelineConfig) {
+    private build(config: Pipeline) {
         this._socket.emit('run', {
-            config: config
-        });
+            name: config.name,
+            config: config.config
+        } as AgentBuild);
     }
 }

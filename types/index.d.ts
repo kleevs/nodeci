@@ -15,6 +15,7 @@ declare type Pipeline = {
     config: PipelineConfig;
 }
 type AgentBuild = {
+    name: string;
     config: PipelineConfig;
 }
 declare type Build = {
@@ -24,7 +25,7 @@ declare type Build = {
 
 declare type Agent = {
     isBusy(): boolean;
-    run(config: PipelineConfig): void;
+    run(config: Pipeline): void;
     doWork(): void;
 }
 
@@ -42,3 +43,35 @@ type BuildContext = {
     workfolder: string;
     rootFolder: string;
 } 
+
+type Log = { 
+    id: string; 
+    index: number; 
+    message: string;
+    pipeline: string;
+    agent: string;
+}
+
+type LogHint = { 
+    id: string; 
+    index: number; 
+    message: string;
+    pipeline: string;
+}
+
+type LogMetadata =  {[buildid:string]: {
+    file: string;
+    date: {
+        start: number;
+        end: number;
+    };
+    successfull: boolean;
+    agent: string;
+}};
+
+type PipelineMetadata = {[pipelinename:string]: PipelineConfig} 
+
+type Storage = {
+    pipeline: PipelineMetadata;
+    logs:  {[pipelinename:string]: LogMetadata};
+}

@@ -4,3 +4,9 @@ export declare function write(pipeline: {
 export declare function read(): Promise<{
     [k: string]: PipelineConfig;
 }>;
+export declare function appendLog({ id, message }: {
+    id: string;
+    message: string;
+}): void;
+export declare function writeLogMetadata(metadata: LogMetadata): void;
+export declare function readLogMetadata(): Promise<LogMetadata>;

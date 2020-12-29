@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import { readSync } from '../../shared/iofile';
 
 type Task = {
     plugin: string;
@@ -19,14 +20,19 @@ type Build = {
 
 export function start(port: number, socketserver: string): void {
     const routage = {
-        buildList: `/pipeline`,
+        pipelineList: `/pipeline`,
         build: `/pipeline/:name`,
-        buildInstance: `/pipeline/:name/:tag`
+        buildInstance: `/pipeline/:name/:id`
     };
 
     const app = express();
     const io = require('socket.io-client');
     const socket = io(socketserver);
+    const data: {
+        storage: Storage
+    } = {
+        storage: null
+    }
 
     socket.on('connect', () => {
         console.log(`connected`);
@@ -36,10 +42,18 @@ export function start(port: number, socketserver: string): void {
         console.log('diconnect')
     });
 
+    socket.on('storage', (storage: Storage) => {
+        data.storage = storage
+    })
+
     app.use(bodyParser.json());
 
-    app.get(routage.buildList, (req, res) => {
-        res.end();
+    app.get(routage.pipelineList, (req, res) => {
+        const result = [];
+        for (var pipeline in data.storage.pipeline) {
+            result.push(pipeline);
+        }
+        res.end(JSON.stringify(result));
     });
 
     app.put(routage.build, (req, res) => {
@@ -51,7 +65,17 @@ export function start(port: number, socketserver: string): void {
     });
 
     app.get(routage.build, (req, res) => {
-        res.end();
+        const result = [];
+        for (var id in data.storage.logs[req.params.name]) {
+            const log = data.storage.logs[req.params.name][id];
+            result.push({
+                id: id,
+                date: log.date,
+                successfull: log.successfull,
+                agent: log.agent
+            });
+        }
+        res.end(JSON.stringify(result));
     });
 
     app.post(routage.build, (req, res) => {
@@ -62,12 +86,10 @@ export function start(port: number, socketserver: string): void {
         res.end();
     });
 
-    app.get(routage.build, (req, res) => {
-        res.end();
-    });
-
     app.get(routage.buildInstance, (req, res) => {
-        res.end();
+        const log = data.storage.logs[req.params.name][req.params.id];
+        const result = readSync(`${log.file}`);
+        res.end(result);
     });
 
     app.listen(port, () => {

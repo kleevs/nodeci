@@ -1,1 +1,1 @@
-export declare function start(port: number, socketserver: string): void;
+export declare function start(config: Config, socketserver: string): void;

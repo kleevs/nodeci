@@ -4,7 +4,7 @@ import { createHash } from 'crypto';
 export function basicAuth(users: () => Users): (req: Request, res: Response, next: () => void) => void {
     return (req, res, next) => {
         const authorization = req.headers?.authorization?.split(';').filter(_ => _.startsWith('Basic '))[0];
-        const [,basicAuthorization] = authorization?.split(' ');
+        const [,basicAuthorization] = authorization?.split(' ') || [];
         if (req.hostname === 'localhost' && req.originalUrl === '/user') {
             next();
             return;

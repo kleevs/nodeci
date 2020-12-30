@@ -58,7 +58,6 @@ export function start(port: number, rootDir: string, config: Config): void {
         }));
     });
 
-    console.log(`listening on port ${port}`);
     io.on('connection', (socket: Socket) => {
         listeners[socket.id] = {
             isAgent: false,
@@ -67,14 +66,12 @@ export function start(port: number, rootDir: string, config: Config): void {
         };
 
         socket.on('disconnect', () => {
-            console.log(`disconnected ${socket.id}`);
             delete listeners[socket.id];
         });
 
         // if it's build agent
         socket.on('agent', (msg) => {
             const { name } = msg;
-            console.log(`an agent connected ${socket.id} ${name}`);
             const agent = listeners[socket.id];
             agent.isAgent = true;
             agent.agent = new Agent(socket, (me) => {
@@ -94,7 +91,6 @@ export function start(port: number, rootDir: string, config: Config): void {
 
         // if it's admin agent
         socket.on('admin', () => {
-            console.log(`an admin connected ${socket.id}`);
             listeners[socket.id].isAdmin = true;
 
             onUpdateStorage(storage => {

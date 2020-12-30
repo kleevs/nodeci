@@ -12,7 +12,6 @@ export function start(host: string, name: string, currentPath: string) {
         socket.emit('log', { id: id, pipeline, index: lognumber.length, message: msg?.replace(/\r?\n$/gi, '').replace(/^\r?\n/gi, '') || '' } as LogHint);
     }
     socket.on('connect', () => {
-        console.log(`is connected as ${socket.id}`);
         socket.emit('agent', { name: name });
     });
 
@@ -48,8 +47,5 @@ export function start(host: string, name: string, currentPath: string) {
     });
 
     socket.on('disconnect', () => {
-        console.log('diconnect')
     });
-
-    console.log(`start agent`);
 }

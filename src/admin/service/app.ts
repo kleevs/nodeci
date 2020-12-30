@@ -3,15 +3,16 @@ import * as bodyParser from 'body-parser';
 import { readSync } from '../../shared/iofile';
 import { basicAuth, computeHash, toBasicAuth } from './authorization';
 import { getUsers, updateUsers } from './storage';
+import { proxy } from './proxy';
 
-export function start(port: number, socketserver: string): void {
+export function start(config: Config, socketserver: string): void {
     const routage = {
         pipelineList: `/pipeline`,
         build: `/pipeline/:name`,
         buildInstance: `/pipeline/:name/:id`,
         user: `/user`
     };
-
+    const port = config.port;
     const app = express();
     const io = require('socket.io-client');
     const socket = io(socketserver);
@@ -21,20 +22,13 @@ export function start(port: number, socketserver: string): void {
         storage: null
     }
 
-    socket.on('connect', () => {
-        console.log(`connected`);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('diconnect')
-    });
-
     socket.on('storage', (storage: Storage) => {
         data.storage = storage
     })
 
     app.use(basicAuth(getUsers));
     app.use(bodyParser.json());
+    //app.use(proxy(config, socketserver))
 
     app.get(routage.pipelineList, (req, res) => {
         const result = [];
@@ -95,6 +89,4 @@ export function start(port: number, socketserver: string): void {
         console.log(`listening at http://localhost:${port}`);
         socket.emit('admin');
     });
-
-    console.log(`connecting to engine...`);
 } 

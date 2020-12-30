@@ -1,9 +1,10 @@
 export default {
+    port: 80,
     socket: {
-        port: 8123,
+        pathname: '/socket',
     },
     api: {
-        port: 8080
+        pathname: '/api'
     },
     pipeline: {}
 } as Config

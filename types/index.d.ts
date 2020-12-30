@@ -30,11 +30,12 @@ declare type Agent = {
 }
 
 declare type Config = {
+    port: number;
     socket: {
-        port: number;
+        pathname: string;
     },
     api: {
-        port: number;
+        pathname: string;
     },
     pipeline: { [name:string]: string; }
 }

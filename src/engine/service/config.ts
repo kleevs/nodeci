@@ -2,11 +2,12 @@ import defaultConfig from '../../shared/config';
 
 export function getConfig(config: Config): Config {
     return {
+        port: config?.port || defaultConfig.port,
         socket: {
-            port: config?.socket?.port || defaultConfig.socket.port
+            pathname: config?.socket?.pathname || defaultConfig.socket.pathname
         },
         api: {
-            port: config?.api?.port || defaultConfig.api.port,
+            pathname: config?.api?.pathname || defaultConfig.api.pathname,
         },
         pipeline: {
             ...defaultConfig.pipeline,

@@ -1,4 +1,4 @@
-export default function (context: BuildContext, { cmd, dockerfile, path, tag }: {
+export default function (context: PluginContext, { cmd, dockerfile, path, tag }: {
     cmd: string;
     dockerfile: string;
     path: string;

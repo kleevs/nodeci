@@ -1,10 +1,10 @@
 import * as process from 'process';
 import * as path from 'path';
-import { start } from './service/main';
+import { start } from './startup/main';
 
 const dirname = process.cwd();
 const config: Config = {
-    port: 80,
+    port: { http: 80, https: 443 },
     pipeline: {},
     ...(() => {
         try {

@@ -23,6 +23,6 @@ export function execute(command: string, log?: (msg: string) => void) {
     });
 }
 
-export default async function (context: BuildContext, commands: string[]) {
+export default async function (context: PluginContext, commands: string[]) {
     await execute(commands?.join(";"));
 }

@@ -1,10 +1,10 @@
 import { resolve } from 'path';
-import { Agent } from "./agent";
-import { Admin } from "./admin";
-import { Engine } from "./engine";
+import { Agent } from "../service/agent";
+import { Admin } from "../service/admin";
+import { Engine } from "../service/engine";
 import { Queue } from "../tool/queue";
-import { Storage } from "./storage";
-import { User } from "./user";
+import { Storage } from "../service/storage";
+import { User } from "../service/user";
 import { EventManager } from "../tool/event-manager";
 import { IOFileAsync, IOFileSync } from "../tool/iofile";
 import { Crypto } from "../tool/crypto";
@@ -14,10 +14,11 @@ import * as bodyParser from 'body-parser';
 import { basicAuth } from '../middleware/authorization';
 import { start as startServer } from '../server/api';
 import { contentType } from '../middleware/content-type';
-import { ConfigAccessor } from './config';
+import { ConfigAccessor } from '../service/config';
+import { createServer } from 'http';
 
 export function start (config: Config) {
-    const port = config.port;
+    const port: number = config.port.http;
     const ioFileAsync = new IOFileAsync();
     const users = new User(new EventManager(), ioFileAsync);
     const agents = {}
@@ -36,10 +37,12 @@ export function start (config: Config) {
         get: () => storage.getStorage(),
         update: (callback: (v: StorageData) => StorageData) => storage.updateStorage(callback)
     };
+    ioFile.mkdir(`./.nodeci/logs`);
     const logger: Logger = {
         info: (id: string, msg: string) => {
-            console.log(msg);
-            ioFileAsync.appendFile(`./.nodeci/logs/${id}.log.txt`, msg);
+            const message = msg?.replace(/\r?\n$/gi, '');
+            console.log(message);
+            ioFileAsync.appendFile(`./.nodeci/logs/${id}.log.txt`, `${message}\r\n`);
         }
     }
     const pinger: Pinger = {
@@ -67,23 +70,23 @@ export function start (config: Config) {
     }
     const taskFactory: ToolsTaskFactory = {
         build: (v: {
-            context: BuildContext;
+            context: BuildContext,
             name: string;
             task: globalThis.Task;
         }) => new Task(ioFile, pathBuilder, v.context, v.name, v.task)
     }
 
     const engine = new Engine(storageAccessor, agents, globalQueue); 
-    new Agent('self-hosted', ioFile, new Queue(), globalQueue, pathBuilder, logger, taskFactory, pinger);
+    const agent = new Agent(process.cwd(), 'self-hosted', ioFile, new Queue(), globalQueue, pathBuilder, logger, taskFactory, pinger);
     const admin = new Admin(engine, storageAccessor, cryptoTools, ioFile, user);
-
+    agents['self-hosted'] = agent;
     const app = express();
     app.use(basicAuth(() => users.getUser()));
     app.use(contentType());
     app.use(bodyParser.json());
     startServer(app, admin);
 
-    app.listen(port, () => {
+    createServer(app).listen(port, () => {
         console.log(`listening at http://localhost:${port}`);
     });
 }

@@ -2,7 +2,7 @@ import run from './script';
 import * as pathlib from 'path';
 import copy from './copy';
 
-export default async function (context: BuildContext, { cmd, dockerfile, path, tag }: { 
+export default async function (context: PluginContext, { cmd, dockerfile, path, tag }: { 
     cmd: string, 
     dockerfile: string; 
     path: string; 
@@ -14,7 +14,7 @@ export default async function (context: BuildContext, { cmd, dockerfile, path, t
     }
 }
 
-async function build(context: BuildContext, dockerfile: string, tag: string, path: string) {
+async function build(context: PluginContext, dockerfile: string, tag: string, path: string) {
     const dockerfilename = dockerfile && `dockerfile_${Math.round(Math.random()*10000)}` || 'Dockerfile';
     const dockerpath = pathlib.resolve(context.workFolder, dockerfilename);
     const pathname = pathlib.resolve(context.workFolder, path || '.');

@@ -6,7 +6,10 @@ export class IOFileSync {
     } 
 
     read(filename: string): string {
-        return fs.readFileSync(`${filename}`, 'utf8').toString();
+        if (fs.existsSync(filename)){
+            return fs.readFileSync(`${filename}`, 'utf8').toString();
+        }
+        return null;
     }
 
     mkdir(dirname: string) {
@@ -29,10 +32,16 @@ export class IOFileAsync {
     } 
     
     read(filename: string) {
-        return new Promise<string>((resolve, reject) => fs.readFile(`${filename}`, 'utf8', (err, data) => {
-            if (err) reject(err);
-            resolve(data);
-        }));
+        return new Promise<string>((resolve, reject) => {
+            if (fs.existsSync(filename)){
+                fs.readFile(`${filename}`, 'utf8', (err, data) => {
+                    if (err) reject(err);
+                    resolve(data);
+                });
+            } else {
+                resolve(null);
+            }
+        });
     }
     
     mkdir(dirname: string) {

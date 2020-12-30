@@ -30,13 +30,23 @@ declare type Agent = {
 }
 
 declare type Config = {
-    port: number;
+    port: { 
+        http: number;
+        https: number;
+    };
     pipeline: { [name:string]: string; }
 }
 
 type BuildContext = {
+    buildFolder: string;
     workFolder: string;
-} 
+    rootFolder: string;
+}
+
+type PluginContext = {
+    workFolder: string;
+    rootFolder: string;
+}
 
 type Log = { 
     id: string; 
@@ -141,7 +151,7 @@ type ToolsTask = {
 
 type ToolsTaskFactory = {
     build(v: {
-        context: BuildContext, 
+        context: BuildContext,
         name: string, 
         task: Task
     }): ToolsTask;

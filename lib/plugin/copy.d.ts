@@ -1,4 +1,4 @@
-export default function (context: BuildContext, { source, destination }: {
+export default function (context: PluginContext, { source, destination }: {
     source: string;
     destination: string;
 }): Promise<void>;

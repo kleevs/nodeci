@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { createHash } from 'crypto';
 
-export function basicAuth(users: () => UsersData): (req: Request, res: Response, next: () => void) => void {
+export function basicAuth(getUsers: () => UsersData): (req: Request, res: Response, next: () => void) => void {
     return (req, res, next) => {
         const authorization = req.headers?.authorization?.split(';').filter(_ => _.startsWith('Basic '))[0];
         const [,basicAuthorization] = authorization?.split(' ') || [];
-        if (req.hostname === 'localhost' && req.originalUrl === '/user') {
+        const users = getUsers();
+        if (req.originalUrl === '/user' && (!users || Object.keys(users).length === 0)) {
             next();
             return;
         }
@@ -14,14 +15,14 @@ export function basicAuth(users: () => UsersData): (req: Request, res: Response,
             const buff = Buffer.from(basicAuthorization, 'base64');
             const [login] = buff.toString('utf8').split(':');
             const hash = computeHash(basicAuthorization);
-            if (users()[login]?.password === hash) {
+            if (users[login]?.password === hash) {
                 next();
                 return
             }
         }
 
         res.status(401);
-        res.end('Non autorisé');
+        res.end();
     }
 }
 

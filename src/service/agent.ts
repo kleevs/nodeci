@@ -2,6 +2,7 @@ export class Agent implements EngineAgent {
     private _isBusy = false;
 
     constructor(
+        private readonly _rootFolder: string,
         private readonly _name: string,
         private readonly _ioFile: IOFileSync,
         private readonly _queue: ToolsQueue<Pipeline>,
@@ -35,18 +36,22 @@ export class Agent implements EngineAgent {
     }
 
     private async build(config: Pipeline) {
-        const workFolder = `./.nodeci/work`;
-        const id = this.findFreeFolderName(workFolder);
+        const workContainer = `./.nodeci/work`;
+        const id = this.findFreeFolderName(workContainer);
+        const workFolder = this._pathBuilder.resolve(workContainer, id);
+        const buildFolder = this._pathBuilder.resolve(workFolder, 'build');
         this._pinger.start(config.name, this._name, id);
         try {
             this._logger.info(id, `pipeline ${config.name}`);
             this._logger.info(id, `preparing...`);
             const build = config;
-            this._ioFile.mkdir(this._pathBuilder.resolve(workFolder, id, 'build'));
+            this._ioFile.mkdir(buildFolder);
 
             const tasks: ToolsTask[] = [];
             const context = {
-                workFolder: workFolder
+                buildFolder: this._pathBuilder.resolve(this._rootFolder, buildFolder),
+                workFolder: this._pathBuilder.resolve(this._rootFolder, workFolder),
+                rootFolder: this._pathBuilder.resolve(this._rootFolder, '.')
             }
             
             for (let taskname in build.config.tasks) {

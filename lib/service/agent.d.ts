@@ -11,7 +11,7 @@ export declare class Agent implements EngineAgent {
     private _isBusy;
     constructor(_rootFolder: string, _name: string, _ioFile: IOFileSync, _queue: ToolsQueue<Pipeline>, _globalQueue: ToolsQueue<Pipeline>, _pathBuilder: PathBuilder, _logger: Logger, _taskFactory: ToolsTaskFactory, _pinger: Pinger);
     isBusy(): boolean;
-    run(config: Pipeline): void;
+    run(config: Pipeline): Promise<void>;
     doWork(): void;
     private build;
     private findFreeFolderName;

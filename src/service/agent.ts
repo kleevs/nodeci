@@ -15,10 +15,17 @@ export class Agent implements EngineAgent {
 
     isBusy() { return this._isBusy; }
 
-    run(config: Pipeline) {
+    async run(config: Pipeline) {
         if (!this._isBusy) {
             this._isBusy = true;
-            this.build(config);
+            await this.build(config);
+            if(!this._queue.shift(async (config) => {
+                await this.build(config);
+                return Promise.resolve(true);
+            })) {
+                this._isBusy = false; 
+                this.doWork();
+            }
         } else {
             this._queue.push(config);
         }
@@ -72,7 +79,7 @@ export class Agent implements EngineAgent {
             this._logger.info(id, e?.toString());
         }
 
-        this._logger.info(id, `pipeline ${config.name} finished`)
+        this._logger.info(id, `pipeline ${config.name} finished`);
     }
 
     private findFreeFolderName(folderDest: string) {

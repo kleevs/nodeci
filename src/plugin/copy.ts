@@ -8,6 +8,6 @@ export default async function (context: BuildContext, {source, destination}: {
     const dest = destination || '.';
     console.log(`copy ${source} to ${dest}`)
     await run(context, [
-        `cp ${JSON.stringify(path.resolve(context.rootFolder, source))} ${JSON.stringify(path.resolve(context.workfolder, dest))}`
+        `cp ${JSON.stringify(path.resolve(context.workFolder, source))} ${JSON.stringify(path.resolve(context.workFolder, dest))}`
     ]);
 }

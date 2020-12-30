@@ -1,9 +1,5 @@
-declare type Context = {
-    workfolder: string;
-};
-export default function (context: Context, { repository, commit, destination }: {
+export default function (context: BuildContext, { repository, commit, destination }: {
     repository: string;
     commit: string;
     destination: string;
 }): Promise<void>;
-export {};

@@ -1,1 +1,3 @@
-export default function (context: any, commands: string[]): Promise<void>;
+export declare function execute(command: string): any;
+export declare function execute(command: string, log: (msg: string) => void): any;
+export default function (context: BuildContext, commands: string[]): Promise<void>;

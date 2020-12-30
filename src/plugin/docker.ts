@@ -16,8 +16,8 @@ export default async function (context: BuildContext, { cmd, dockerfile, path, t
 
 async function build(context: BuildContext, dockerfile: string, tag: string, path: string) {
     const dockerfilename = dockerfile && `dockerfile_${Math.round(Math.random()*10000)}` || 'Dockerfile';
-    const dockerpath = pathlib.resolve(context.workfolder, dockerfilename);
-    const pathname = pathlib.resolve(context.workfolder, path || '.');
+    const dockerpath = pathlib.resolve(context.workFolder, dockerfilename);
+    const pathname = pathlib.resolve(context.workFolder, path || '.');
     const tagname = tag?.split(/\s+/)[0];
 
     if (dockerfile) {

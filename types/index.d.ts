@@ -8,7 +8,8 @@ declare type Listeners = {[k:string]: {
     agent: Agent
 }}
 declare type PipelineConfig = {
-    tasks: {[k:string]: Task}
+    path: string;
+    entry: string;
 }
 declare type Pipeline = {
     name: string;
@@ -149,12 +150,23 @@ type ToolsTask = {
     run(log: (msg: string) => void): Promise<void>;
 }
 
+type ToolsRunner = {
+    run(log: (msg: string) => void): Promise<void>;
+}
+
 type ToolsTaskFactory = {
     build(v: {
         context: BuildContext,
         name: string, 
         task: Task
     }): ToolsTask;
+}
+
+type ToolsRunnerFactory = {
+    build(v: {
+        context: PipelineConfig,
+        buildFolder: string;
+    }): ToolsRunner;
 }
 
 type EngineInterface = {

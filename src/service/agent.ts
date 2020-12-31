@@ -9,7 +9,7 @@ export class Agent implements EngineAgent {
         private readonly _globalQueue: ToolsQueue<Pipeline>,
         private readonly _pathBuilder: PathBuilder,
         private readonly _logger: Logger,
-        private readonly _taskFactory: ToolsTaskFactory,
+        private readonly _runnerFactory: ToolsRunnerFactory,
         private readonly _pinger: Pinger
     ) {}
 
@@ -53,28 +53,31 @@ export class Agent implements EngineAgent {
             this._logger.info(id, `preparing...`);
             const build = config;
             this._ioFile.mkdir(buildFolder);
-
-            const tasks: ToolsTask[] = [];
-            const context = {
-                buildFolder: this._pathBuilder.resolve(this._rootFolder, buildFolder),
-                workFolder: this._pathBuilder.resolve(this._rootFolder, workFolder),
-                rootFolder: this._pathBuilder.resolve(this._rootFolder, '.')
-            }
-            
-            for (let taskname in build.config.tasks) {
-                const task = build.config.tasks[taskname];
-                tasks.push(this._taskFactory.build({
-                    context, 
-                    task,
-                    name: taskname
-                }));
-            }
-
+            const runner = this._runnerFactory.build({ buildFolder, context: config.config });
             this._logger.info(id, `starting...`);
+            await runner.run((msg) => this._logger.info(id, msg));
 
-            for (let i in tasks) {
-                await tasks[i].run((msg) => this._logger.info(id, msg));
-            }
+            // const tasks: ToolsTask[] = [];
+            // const context = {
+            //     buildFolder: this._pathBuilder.resolve(this._rootFolder, buildFolder),
+            //     workFolder: this._pathBuilder.resolve(this._rootFolder, workFolder),
+            //     rootFolder: this._pathBuilder.resolve(this._rootFolder, '.')
+            // }
+            
+            // for (let taskname in build.config.tasks) {
+            //     const task = build.config.tasks[taskname];
+            //     tasks.push(this._taskFactory.build({
+            //         context, 
+            //         task,
+            //         name: taskname
+            //     }));
+            // }
+
+            // this._logger.info(id, `starting...`);
+
+            // for (let i in tasks) {
+            //     await tasks[i].run((msg) => this._logger.info(id, msg));
+            // }
         } catch (e) {
             this._logger.info(id, e?.toString());
         }

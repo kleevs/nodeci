@@ -8,9 +8,12 @@ export class ConfigAccessor {
         const result: PipelineMetadata = {};
         for (let name in config.pipeline) {
             try {
-                const pathfilename = this._pathBuilder.resolve('./', config.pipeline[name]);
-                const str = this._ioFile.read(pathfilename);
-                result[name] = JSON.parse(str);
+                if (typeof config.pipeline[name] === "string") {
+                    result[name] = {
+                        path: config.pipeline[name],
+                        entry: 'index.js'
+                    }
+                }
             } catch (e) {}
         }
         

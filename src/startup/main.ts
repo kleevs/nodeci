@@ -16,6 +16,7 @@ import { start as startServer } from '../server/api';
 import { contentType } from '../middleware/content-type';
 import { ConfigAccessor } from '../service/config';
 import { createServer } from 'http';
+import { Runner } from '../tool/runner';
 
 export function start (config: Config) {
     const port: number = config.port.http;
@@ -68,12 +69,11 @@ export function start (config: Config) {
             }
         })
     }
-    const taskFactory: ToolsTaskFactory = {
+    const taskFactory: ToolsRunnerFactory = {
         build: (v: {
-            context: BuildContext,
-            name: string;
-            task: globalThis.Task;
-        }) => new Task(ioFile, pathBuilder, v.context, v.name, v.task)
+            context: PipelineConfig,
+            buildFolder: string
+        }) => new Runner(v.buildFolder, v.context, pathBuilder)
     }
 
     const engine = new Engine(storageAccessor, agents, globalQueue); 

@@ -6,10 +6,10 @@ export declare class Agent implements EngineAgent {
     private readonly _globalQueue;
     private readonly _pathBuilder;
     private readonly _logger;
-    private readonly _taskFactory;
+    private readonly _runnerFactory;
     private readonly _pinger;
     private _isBusy;
-    constructor(_rootFolder: string, _name: string, _ioFile: IOFileSync, _queue: ToolsQueue<Pipeline>, _globalQueue: ToolsQueue<Pipeline>, _pathBuilder: PathBuilder, _logger: Logger, _taskFactory: ToolsTaskFactory, _pinger: Pinger);
+    constructor(_rootFolder: string, _name: string, _ioFile: IOFileSync, _queue: ToolsQueue<Pipeline>, _globalQueue: ToolsQueue<Pipeline>, _pathBuilder: PathBuilder, _logger: Logger, _runnerFactory: ToolsRunnerFactory, _pinger: Pinger);
     isBusy(): boolean;
     run(config: Pipeline): Promise<void>;
     doWork(): void;

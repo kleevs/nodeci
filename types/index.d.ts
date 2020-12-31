@@ -10,6 +10,7 @@ declare type Listeners = {[k:string]: {
 declare type PipelineConfig = {
     path: string;
     entry: string;
+    cmd: string;
 }
 declare type Pipeline = {
     name: string;
@@ -35,7 +36,11 @@ declare type Config = {
         http: number;
         https: number;
     };
-    pipeline: { [name:string]: string; }
+    pipeline: { [name:string]: string | {
+        path: string;
+        entry: string;
+        cmd: string;
+    }; }
 }
 
 type BuildContext = {

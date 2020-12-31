@@ -4,4 +4,5 @@ export declare class Runner {
     private readonly _pathBuilder;
     constructor(_buildFolder: string, _config: PipelineConfig, _pathBuilder: PathBuilder);
     run(log: (msg: string) => void): Promise<void>;
+    private exec;
 }

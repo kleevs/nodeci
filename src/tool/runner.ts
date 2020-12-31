@@ -11,9 +11,7 @@ export class Runner {
 
     async run(log: (msg: string) => void): Promise<void> {
         return new Promise<void>(resolve => {
-            const child = spawn('powershell', [`node "${this._config.entry}"`], {
-                cwd: this._pathBuilder.resolve(this._buildFolder)
-            });
+            const child = this.exec(`${this._config.entry}`);
 
             child.stdout.on('data', (data) => log(data.toString()));
             child.stderr.on('data', (data) => log(data.toString()));
@@ -21,5 +19,19 @@ export class Runner {
                 resolve();
             });
         });
+    }
+
+    private exec(command: string) {
+        if (!/^win/.test(process.platform)) { // linux
+            return spawn(command, [], {
+                cwd: this._pathBuilder.resolve(this._buildFolder),
+                env: process.env
+            });
+        } else { // windows
+            return spawn('cmd', ['/s', '/c', command], {
+                cwd: this._pathBuilder.resolve(this._buildFolder),
+                env: process.env
+            });
+        }
     }
 }
